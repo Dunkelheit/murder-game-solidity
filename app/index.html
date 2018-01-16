@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>UserCrud</title>
+    <title>Murder Game</title>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <script src="./app.js"></script>
 </head>
 <body>
-<h1>UserCrud</h1>
-<p>Use the console</p>
+<h1>Murder Game</h1>
+<div>
+    <button onclick="App.batchInsert()">Batch insert users</button>
+    <button onclick="App.startGame()">Start game</button>
+</div>
+<div id="users"></div>
+<div id="matches"></div>
 </body>
 </html>

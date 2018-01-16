@@ -11,9 +11,13 @@ const MurderGame = contract(murderGameArtifacts);
 
 let accounts;
 let account;
+let userDiv;
+let matchesDiv;
 
 window.App = {
     start: function () {
+        userDiv = document.getElementById('users');
+        matchesDiv = document.getElementById('matches');
         UserCrud.setProvider(web3.currentProvider);
         MurderGame.setProvider(web3.currentProvider);
 
@@ -39,19 +43,55 @@ window.App = {
                         console.log(err);
                         return;
                     }
-                    console.log('LOGNEWUSER');
-                    console.log(result);
+                    const { userAddress, userEmail } = result.args;
+                    console.log('Added user ' + web3.toAscii(userEmail));
+                    userDiv.insertAdjacentHTML('beforeend',
+                        '<p><code>' + userAddress + '</code> ' + web3.toAscii(userEmail) + '</p>');
                 });
+
+                instance.getUserCount.call(account, { from: account }).then(function (value) {
+                    for (let i = 0; i < value.toString(10); i++) {
+                        App.getUserAtIndex(i).then(function (address) {
+                            App.getUser(address).then((result) => {
+                                console.log('Read user ' + web3.toAscii(result[0]));
+                                userDiv.insertAdjacentHTML('beforeend',
+                                    '<p><code>' + address + '</code> ' + web3.toAscii(result[0]) + '</p>');
+                            });
+                        });
+                    }
+                });
+                return;
+            }).then(function () {
+                MurderGame.deployed().then(function (instance) {
+                    const event = instance.GameStarted();
+                    event.watch(function (err, result) {
+                        if (err) {
+                            console.log('ERROR!');
+                            console.log(err);
+                            return;
+                        }
+
+                        const participants = result.args.participants.toString(10);
+                        matchesDiv.innerHTML = '<p>Game started with ' + participants + ' participant(s)</p>';
+
+                        for (let i = 0; i < participants; i++) {
+                            App.getAssignments(i).then(function (value) {
+                                matchesDiv.insertAdjacentHTML('beforeend',
+                                    'Player ' + i + ' is target of player ' + value[0].toString(10) +
+                                    ' and has to kill player ' + value[1].toString(10) + '<br/>');
+                            });
+                        }
+                    });
+                });
+
             });
         });
     },
 
     insertUser: function (userAddress, userEmail, userAge) {
-        UserCrud.deployed().then(function (instance) {
+        return UserCrud.deployed().then(function (instance) {
             return instance.insertUser(userAddress, userEmail, userAge, { gas: 140000, from: account });
         }).then(function (value) {
-            console.log(value);
-            console.log(value.valueOf());
             return value;
         }).catch(function (err) {
             console.error(err);
@@ -96,11 +136,9 @@ window.App = {
     },
 
     getUser: function (address) {
-        UserCrud.deployed().then(function (instance) {
+        return UserCrud.deployed().then(function (instance) {
             return instance.getUser(address, { from: account });
         }).then(function (value) {
-            console.log(value);
-            console.log(value[0].valueOf());
             return value;
         }).catch(function (err) {
             console.error(err);
@@ -108,12 +146,9 @@ window.App = {
     },
 
     getUserAtIndex: function (i) {
-        UserCrud.deployed().then(function (instance) {
-            return instance.getUserAtIndex.call(account, i, { from: account });
+        return UserCrud.deployed().then(function (instance) {
+            return instance.getUserAtIndex(i, { from: account });
         }).then(function (value) {
-            console.log(value);
-            console.log(value.toString());
-            console.log(value.valueOf());
             return value;
         }).catch(function (err) {
             console.error(err);
@@ -121,12 +156,19 @@ window.App = {
     },
 
     startGame: function () {
-        MurderGame.deployed().then(function (instance) {
+        return MurderGame.deployed().then(function (instance) {
             return instance.startGame({ gas: 500000, from: account });
         }).then(function (value) {
-            console.log(value);
-            console.log(value.toString());
-            console.log(value.valueOf());
+            return value;
+        }).catch(function (err) {
+            console.error(err);
+        });
+    },
+
+    getAssignments: function (i) {
+        return MurderGame.deployed().then(function (instance) {
+            return instance.getAssignments(i, { from: account });
+        }).then(function (value) {
             return value;
         }).catch(function (err) {
             console.error(err);
@@ -164,6 +206,23 @@ window.App = {
         }).catch(function (err) {
             console.error(err);
         });
+    },
+
+    batchInsert: function() {
+        return App.insertUser('0x627306090abaB3A6e1400e9345bC60c78a8BEf57', 'arturo@icemobile.com', 10)
+            .then(function () {
+                return App.insertUser('0xf17f52151EbEF6C7334FAD080c5704D77216b732', 'willem@icemobile.com', 10);
+            }).then(function () {
+                return App.insertUser('0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef', 'leon@icemobile.com', 10);
+            }).then(function () {
+                return App.insertUser('0x821aEa9a577a9b44299B9c15c88cf3087F3b5544', 'christian@icemobile.com', 10);
+            }).then(function () {
+                return App.insertUser('0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2', 'frank@icemobile.com', 10);
+            }).then(function () {
+                return App.insertUser('0x2932b7A2355D6fecc4b5c0B6BD44cC31df247a2e', 'rolf@icemobile.com', 10);
+            }).then(function () {
+                return App.insertUser('0x2191eF87E392377ec08E7c08Eb105Ef5448eCED5', 'yury@icemobile.com', 10);
+            });
     }
 };
 
