@@ -57,7 +57,7 @@ contract UserCrud {
 
     function getUser(address userAddress)
     public
-    constant
+    view
     isUser(userAddress)
     returns (bytes32 userEmail, uint userAge, uint index)
     {
@@ -96,7 +96,7 @@ contract UserCrud {
 
     function getUserCount()
     public
-    constant
+    view
     returns (uint count)
     {
         return userIndex.length;
@@ -104,7 +104,7 @@ contract UserCrud {
 
     function getUserAtIndex(uint index)
     public
-    constant
+    view
     returns (address userAddress)
     {
         return userIndex[index];

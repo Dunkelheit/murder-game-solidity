@@ -53,6 +53,8 @@ window.App = {
             console.log(value);
             console.log(value.valueOf());
             return value;
+        }).catch(function (err) {
+            console.error(err);
         });
     },
 
@@ -63,6 +65,20 @@ window.App = {
         }).then(function (value) {
             console.log(value.valueOf());
             return value;
+        }).catch(function (err) {
+            console.error(err);
+        });
+    },
+
+    countSomething: function () {
+        MurderGame.deployed().then(function (instance) {
+            console.log(instance);
+            return instance.countSomething.call(account, { from: account });
+        }).then(function (value) {
+            console.log(value.toString(10));
+            return value;
+        }).catch(function (err) {
+            console.error(err);
         });
     },
 
@@ -74,6 +90,8 @@ window.App = {
             console.log(value.toString());
             console.log(value.valueOf());
             return value;
+        }).catch(function (err) {
+            console.error(err);
         });
     },
 
@@ -84,6 +102,8 @@ window.App = {
             console.log(value);
             console.log(value[0].valueOf());
             return value;
+        }).catch(function (err) {
+            console.error(err);
         });
     },
 
@@ -95,6 +115,54 @@ window.App = {
             console.log(value.toString());
             console.log(value.valueOf());
             return value;
+        }).catch(function (err) {
+            console.error(err);
+        });
+    },
+
+    startGame: function () {
+        MurderGame.deployed().then(function (instance) {
+            return instance.startGame({ gas: 500000, from: account });
+        }).then(function (value) {
+            console.log(value);
+            console.log(value.toString());
+            console.log(value.valueOf());
+            return value;
+        }).catch(function (err) {
+            console.error(err);
+        });
+    },
+
+    getMurderer: function (i) {
+        MurderGame.deployed().then(function (instance) {
+            return instance.getMurderer(i, { from: account });
+        }).then(function (value) {
+            console.log(value.toString(10));
+            return value;
+        }).catch(function (err) {
+            console.error(err);
+        });
+    },
+
+    getMurderee: function (i) {
+        MurderGame.deployed().then(function (instance) {
+            return instance.getMurderee(i, { from: account });
+        }).then(function (value) {
+            console.log(value.toString(10));
+            return value;
+        }).catch(function (err) {
+            console.error(err);
+        });
+    },
+
+    sizeOfAssignment: function () {
+        MurderGame.deployed().then(function (instance) {
+            return instance.sizeOfAssignment.call(account, { from: account });
+        }).then(function (value) {
+            console.log(value.toString(10));
+            return value;
+        }).catch(function (err) {
+            console.error(err);
         });
     }
 };
